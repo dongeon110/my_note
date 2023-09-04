@@ -5,7 +5,7 @@ spring:
   profiles:
     default: dev
 
-  datasource:
+  datasource: # 실제 사용 application 과는 다른 설정. 구조는 거의 동일.
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/test
     username: dongeon110
