@@ -1,6 +1,7 @@
 package com.note.dbdocs.web;
 
 import com.note.dbdocs.dto.TableCommentDTO;
+import com.note.dbdocs.service.DbdocsExcelService;
 import com.note.dbdocs.service.DbdocsPostgresService;
 import com.note.dbdocs.vo.DbdocsSrchInfo;
 import com.note.utils.ResponseDTO;
@@ -32,6 +33,8 @@ public class DbDocsRestController {
 
     @Resource(name="dbdocsPostgresService")
     DbdocsPostgresService dbdocsPostgresService;
+    @Resource(name="dbdocsExcelService")
+    DbdocsExcelService dbdocsExcelService;
 
     /**
      * PostgreSQL DB의 테이블 이름과 코멘트를 조회
@@ -108,23 +111,16 @@ public class DbDocsRestController {
             *   3. Insert Data
             * */
 
-            // 1. Create Title Row
+            // 1.0 Create Title Row
             SXSSFRow titleRow = sheet.createRow(0);
 
             // 1.1 Title CellType
-            CellType titleCellType = CellType.STRING;
             SXSSFCell titleCell = titleRow.createCell(0);
-            titleCell.setCellType(titleCellType);
+            titleCell.setCellType(CellType.STRING);
             titleCell.setCellValue("테이블목록");
 
             // 1.2 Main Title CellStyle
-            CellStyle mainTitleCellStyle = workbook.createCellStyle();
-            byte mainTitleColor[] = new byte[] {(byte) 242, (byte) 242, (byte) 242}; // 217, 217, 217
-            mainTitleCellStyle.setFillForegroundColor(new XSSFColor(mainTitleColor, null));
-            mainTitleCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            mainTitleCellStyle.setAlignment(HorizontalAlignment.CENTER);
-            mainTitleCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-
+            CellStyle mainTitleCellStyle = dbdocsExcelService.getMainTitleCellStyle(workbook);
             titleCell.setCellStyle(mainTitleCellStyle);
 
             // 1.3 Merge Title Cells
