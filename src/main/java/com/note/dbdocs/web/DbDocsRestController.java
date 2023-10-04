@@ -3,6 +3,7 @@ package com.note.dbdocs.web;
 import com.note.dbdocs.dto.TableCommentDTO;
 import com.note.dbdocs.service.DbdocsExcelService;
 import com.note.dbdocs.service.DbdocsPostgresService;
+import com.note.dbdocs.util.DbdocsCellStyleUtils;
 import com.note.dbdocs.vo.DbdocsSrchInfo;
 import com.note.utils.ResponseDTO;
 import jakarta.annotation.Resource;
@@ -13,8 +14,6 @@ import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -107,8 +106,8 @@ public class DbDocsRestController {
 
             /* TODO SOMETHING..
             *   1. Create Title Row
-            *   2. Create Data Rows.
-            *   3. Insert Data
+            *   2. Create Sub Title Row
+            *   3.
             * */
 
             // 1.0 Create Title Row
@@ -120,35 +119,23 @@ public class DbDocsRestController {
             titleCell.setCellValue("테이블목록");
 
             // 1.2 Main Title CellStyle
-            CellStyle mainTitleCellStyle = dbdocsExcelService.getMainTitleCellStyle(workbook);
+            CellStyle mainTitleCellStyle = DbdocsCellStyleUtils.getMainTitleCellStyle(workbook);
             titleCell.setCellStyle(mainTitleCellStyle);
 
             // 1.3 Merge Title Cells
             sheet.addMergedRegion(CellRangeAddress.valueOf("A1:D1")); // Merged Title Cells
 
             // 2.0 Set SubTitle CellStyle
-            CellStyle subTitleCellStyle = workbook.createCellStyle();
-            // 2.0.1 Background Color
-            byte subTitleColor[] = new byte[] {(byte) 217, (byte) 217, (byte) 217};
-            subTitleCellStyle.setFillForegroundColor(new XSSFColor(subTitleColor, null));
-            subTitleCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            // 2.0.2 Border Line
-            subTitleCellStyle.setBorderRight(BorderStyle.THIN);
-            subTitleCellStyle.setBorderLeft(BorderStyle.THIN);
-            subTitleCellStyle.setBorderTop(BorderStyle.THIN);
-            subTitleCellStyle.setBorderBottom(BorderStyle.THIN);
-            // 2.0.3 Sort
-            subTitleCellStyle.setAlignment(HorizontalAlignment.CENTER);
-            subTitleCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            CellStyle subTitleCellStyle = DbdocsCellStyleUtils.getSubTitleCellStyle(workbook);
 
-            // 2.0.4 System Title
+            // 2.0.1 System Title
             int titleRowNum = sheet.getLastRowNum();
             SXSSFRow systemNameRow = sheet.createRow(titleRowNum + 2);
             SXSSFCell systemNameTitleCell = systemNameRow.createCell(0);
             systemNameTitleCell.setCellValue("시스템명");
             systemNameTitleCell.setCellStyle(subTitleCellStyle);
 
-            // 2.0.5 System Title Merge
+            // 2.0.2 System Title Merge
             SXSSFCell systemNameTitleMergedCell = systemNameRow.createCell(1);
             systemNameTitleMergedCell.setCellStyle(subTitleCellStyle);
             sheet.addMergedRegion(CellRangeAddress.valueOf("A3:B3")); // Merged Title Cells
