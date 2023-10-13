@@ -1,5 +1,6 @@
 package com.note.dbdocs.mapper;
 
+import com.note.dbdocs.dto.ColumnCommentDTO;
 import com.note.dbdocs.dto.TableCommentDTO;
 import com.note.dbdocs.vo.DbdocsSrchInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,5 +19,12 @@ public interface DbdocsPostgresMapper {
      * @return 테이블 명이 검색조건의 tableName을 포함하고 있는 테이블 조회, tableName이 없는 경우, 전체 조회
      * @since 23.09.20
      */
-    List<TableCommentDTO> selectTableCommentDTOList(@Param("dbdocsSrchInfo") DbdocsSrchInfo dbdocsSrchInfo); //
+    List<TableCommentDTO> selectTableCommentDTOList(@Param("dbdocsSrchInfo") DbdocsSrchInfo dbdocsSrchInfo);
+
+    /**
+     * PostgreSQL DB의 테이블이름 / 테이블 코멘트 / 컬럼명 / 컬럼코멘트 조회
+     * @param dbdocsSrchInfo 검색조건, 스키마명 default: public
+     * @return table명 없는 경우 전체, 컬럼명 없는 경우 전체
+     */
+    List<ColumnCommentDTO> selectTableColumnCommentDTOList(@Param("dbdocsSrchInfo") DbdocsSrchInfo dbdocsSrchInfo);
 }
