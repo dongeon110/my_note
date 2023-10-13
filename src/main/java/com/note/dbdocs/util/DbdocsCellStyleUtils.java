@@ -52,11 +52,119 @@ public class DbdocsCellStyleUtils {
         // Font
         Font font = workbook.createFont();
         font.setFontName("KoPub돋움체 Bold");
-        font.setFontHeight((short)(20*14)); // Font Size
+        font.setFontHeight((short)(20*10)); // Font Size
         subTitleCellStyle.setFont(font);
 
         return subTitleCellStyle;
     }
+
+    /**
+     * workbook의 가운데 정렬 CellStyle
+     * @param workbook
+     * @return
+     */
+    public static CellStyle getBorderCenterCellStyle(Workbook workbook) {
+        // Create CellStyle
+        CellStyle cellStyle = workbook.createCellStyle();
+
+        // BorderStyle
+        setBorderThin(cellStyle);
+
+        // Sort
+        setSortCenter(cellStyle);
+
+        // Font
+        Font font = workbook.createFont();
+        font.setFontName("KoPub돋움체 Bold");
+        font.setFontHeight((short)(20*10)); // Font Size
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    /**
+     * workbook의 정렬 없음 CellStyle
+     * @param workbook
+     * @return
+     */
+    public static CellStyle getBorderCellStyle(Workbook workbook) {
+        // Create CellStyle
+        CellStyle cellStyle = workbook.createCellStyle();
+
+        // BorderStyle
+        setBorderThin(cellStyle);
+
+        // Sort
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        // Font
+        Font font = workbook.createFont();
+        font.setFontName("KoPub돋움체 Bold");
+        font.setFontHeight((short)(20*10)); // Font Size
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    /**
+     * 빈칸을 구분하기 위한 CellStyle 정렬 X
+     * @param workbook
+     * @return
+     */
+    public static CellStyle getBlankCellStyle(Workbook workbook) {
+        // Create CellStyle
+        CellStyle cellStyle = workbook.createCellStyle();
+
+        // Background Color
+        byte[] blankColor = new byte[] {(byte) 255, (byte) 255, (byte) 0}; // 노랑
+        cellStyle.setFillForegroundColor(new XSSFColor(blankColor, null));
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // BorderStyle
+        setBorderThin(cellStyle);
+
+        // Sort
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        // Font
+        Font font = workbook.createFont();
+        font.setFontName("KoPub돋움체 Bold");
+        font.setFontHeight((short)(20*10)); // Font Size
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    /**
+     * 빈칸을 구분하기 위한 CellStyle + 가운데 정렬
+     * @param workbook
+     * @return
+     */
+    public static CellStyle getBlankCenterCellStyle(Workbook workbook) {
+        // Create CellStyle
+        CellStyle cellStyle = workbook.createCellStyle();
+
+        // Background Color
+        byte[] blankColor = new byte[] {(byte) 255, (byte) 255, (byte) 0}; // 노랑
+        cellStyle.setFillForegroundColor(new XSSFColor(blankColor, null));
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // BorderStyle
+        setBorderThin(cellStyle);
+
+        // Sort
+        setSortCenter(cellStyle);
+
+        // Font
+        Font font = workbook.createFont();
+        font.setFontName("KoPub돋움체 Bold");
+        font.setFontHeight((short)(20*10)); // Font Size
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+
 
     /**
      * CellStyle에 Cell THIN테두리를 추가해주는 메서드

@@ -4,6 +4,7 @@ import com.note.dbdocs.dto.TableCommentDTO;
 import com.note.dbdocs.service.DbdocsExcelService;
 import com.note.dbdocs.service.DbdocsPostgresService;
 import com.note.dbdocs.util.DbdocsCellStyleUtils;
+import com.note.dbdocs.util.DbdocsWorkbook;
 import com.note.dbdocs.vo.DbdocsSrchInfo;
 import com.note.utils.ResponseDTO;
 import jakarta.annotation.Resource;
@@ -92,9 +93,8 @@ public class DbDocsRestController {
         List<TableCommentDTO> tableCommentList = dbdocsPostgresService.selectTableCommentDTOList(dbdocsSrchInfo);
 
         try (
-                SXSSFWorkbook workbook = new SXSSFWorkbook();
+                DbdocsWorkbook workbook = new DbdocsWorkbook();
         ) {
-            workbook.setCompressTempFiles(true);
 
             // Create Sheet
             SXSSFSheet sheet = workbook.createSheet("테이블목록");
@@ -104,95 +104,8 @@ public class DbDocsRestController {
             sheet.setColumnWidth(2, 32*430);
             sheet.setColumnWidth(3, 32*150);
 
-            /* TODO SOMETHING..
-            *   1. Create Title Row
-            *   2. Create Sub Title Row
-            *   3.
-            * */
-
-            // 1.0 Create Title Row
-            SXSSFRow titleRow = sheet.createRow(0);
-
-            // 1.1 Title CellType
-            SXSSFCell titleCell = titleRow.createCell(0);
-            titleCell.setCellType(CellType.STRING);
-            titleCell.setCellValue("테이블목록");
-
-            // 1.2 Main Title CellStyle
-            CellStyle mainTitleCellStyle = DbdocsCellStyleUtils.getMainTitleCellStyle(workbook);
-            titleCell.setCellStyle(mainTitleCellStyle);
-
-            // 1.3 Merge Title Cells
-            sheet.addMergedRegion(CellRangeAddress.valueOf("A1:D1")); // Merged Title Cells
-
-            // 2.0 Set SubTitle CellStyle
-            CellStyle subTitleCellStyle = DbdocsCellStyleUtils.getSubTitleCellStyle(workbook);
-
-            // 2.0.1 System Title
-            int titleRowNum = sheet.getLastRowNum();
-            SXSSFRow systemNameRow = sheet.createRow(titleRowNum + 2);
-            SXSSFCell systemNameTitleCell = systemNameRow.createCell(0);
-            systemNameTitleCell.setCellValue("시스템명");
-            systemNameTitleCell.setCellStyle(subTitleCellStyle);
-
-            // 2.0.2 System Title Merge
-            SXSSFCell systemNameTitleMergedCell = systemNameRow.createCell(1);
-            systemNameTitleMergedCell.setCellStyle(subTitleCellStyle);
-            sheet.addMergedRegion(CellRangeAddress.valueOf("A3:B3")); // Merged Title Cells
-
-
-            // 2.1.0 Set Data CellStyle Center
-            CellStyle centerBorderStyle = workbook.createCellStyle();
-            centerBorderStyle.setBorderRight(BorderStyle.THIN);
-            centerBorderStyle.setBorderLeft(BorderStyle.THIN);
-            centerBorderStyle.setBorderTop(BorderStyle.THIN);
-            centerBorderStyle.setBorderBottom(BorderStyle.THIN);
-            centerBorderStyle.setAlignment(HorizontalAlignment.CENTER);
-            centerBorderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            // Set Data CellStyle Left
-            CellStyle borderStyle = workbook.createCellStyle();
-            borderStyle.setBorderRight(BorderStyle.THIN);
-            borderStyle.setBorderLeft(BorderStyle.THIN);
-            borderStyle.setBorderTop(BorderStyle.THIN);
-            borderStyle.setBorderBottom(BorderStyle.THIN);
-
-            // 2.1 System Name
-            SXSSFCell systemNameCell = systemNameRow.createCell(2);
-            systemNameCell.setCellValue(systemName);
-            systemNameCell.setCellStyle(centerBorderStyle);
-            SXSSFCell systemNameMergedCell = systemNameRow.createCell(3);
-            systemNameMergedCell.setCellStyle(centerBorderStyle);
-            sheet.addMergedRegion(CellRangeAddress.valueOf("C3:D3")); // Merged Title Cells
-
-            // 3.0 Sub Title
-            SXSSFRow subTitleRow = sheet.createRow(3);
-            List<String> subTitleNameList = Arrays.asList("No", "테이블영문명", "테이블한글명", "비고");
-            int subTitleIndex = 0;
-            for(String subTitleName : subTitleNameList) {
-                SXSSFCell subTitleCell = subTitleRow.createCell(subTitleIndex++);
-                subTitleCell.setCellStyle(subTitleCellStyle);
-                subTitleCell.setCellValue(subTitleName);
-            }
-
-            int rowCnt = 4;
-            // Datas
-            for(TableCommentDTO tableCommentDTO : tableCommentList) {
-                SXSSFRow dataRow = sheet.createRow(rowCnt++);
-                SXSSFCell noCell = dataRow.createCell(0);
-                noCell.setCellValue(rowCnt-4);
-                noCell.setCellStyle(centerBorderStyle);
-
-                SXSSFCell tableCell = dataRow.createCell(1);
-                tableCell.setCellValue(tableCommentDTO.getTableName());
-                tableCell.setCellStyle(borderStyle);
-
-                SXSSFCell commentCell = dataRow.createCell(2);
-                commentCell.setCellValue(tableCommentDTO.getTableComment());
-                commentCell.setCellStyle(borderStyle);
-
-                SXSSFCell blankCell = dataRow.createCell(3);
-                blankCell.setCellStyle(borderStyle);
-            }
+            // sheet 에 표 테이블 추가
+            workbook.createTableListTable(sheet, tableCommentList);
 
             /* tmp File */
             File tmpFile = File.createTempFile("TMP~", ".xlsx");
