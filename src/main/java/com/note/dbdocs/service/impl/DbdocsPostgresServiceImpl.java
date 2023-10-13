@@ -14,7 +14,6 @@ import java.util.List;
 public class DbdocsPostgresServiceImpl implements DbdocsPostgresService {
 
     private final DbdocsPostgresMapper dbdocsPostgresMapper;
-
     public DbdocsPostgresServiceImpl(DbdocsPostgresMapper dbdocsPostgresMapper) {
         this.dbdocsPostgresMapper = dbdocsPostgresMapper;
     }

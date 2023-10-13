@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.note.dbdocs.mapper.DbdocsPostgresMapper">
+
+    <resultMap type="com.note.dbdocs.dto.TableCommentDTO" id="tableCommentDTOList">
+        <id column="table_name" property="tableName" />
+        <id column="table_comment" property="tableComment" />
+    </resultMap>
+
+    <!-- 테이블명과 테이블 코멘트를 조회 -->
+    <select id="selectTableCommentDTOList" parameterType="com.note.dbdocs.vo.DbdocsSrchInfo" resultMap="tableCommentDTOList">
+        SELECT pgt.tablename AS table_name,
+               sub.table_comment AS table_comment
+        FROM   pg_catalog.pg_tables AS pgt
+                 LEFT JOIN (SELECT b.relname     AS table_name
+                                 , a.description AS table_comment
+                            FROM   pg_catalog.pg_description a
+                                       FULL JOIN pg_catalog.pg_stat_all_tables b
+                                                 ON        a.objoid = b.relid
+                            WHERE  objoid IN (SELECT oid
+                                              FROM   pg_class
+                                              WHERE  relnamespace = (SELECT oid
+                                                                     FROM   pg_catalog.pg_namespace
+                                                                     WHERE  nspname = #{dbdocsSrchInfo.schemaName})
+                                             )
+                              AND    objsubid = 0
+                            ) AS sub
+                           ON pgt.tablename = sub.table_name
+        WHERE schemaname = #{dbdocsSrchInfo.schemaName}
+          AND pgt.tablename LIKE '%'||#{dbdocsSrchInfo.tableName}||'%'
+        ORDER BY pgt.tablename
+    </select>
+
+</mapper>
