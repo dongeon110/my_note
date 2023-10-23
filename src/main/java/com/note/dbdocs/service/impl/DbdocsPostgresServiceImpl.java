@@ -1,5 +1,6 @@
 package com.note.dbdocs.service.impl;
 
+import com.note.dbdocs.dto.ColumnCommentDTO;
 import com.note.dbdocs.dto.TableCommentDTO;
 
 import com.note.dbdocs.mapper.DbdocsPostgresMapper;
@@ -14,7 +15,6 @@ import java.util.List;
 public class DbdocsPostgresServiceImpl implements DbdocsPostgresService {
 
     private final DbdocsPostgresMapper dbdocsPostgresMapper;
-
     public DbdocsPostgresServiceImpl(DbdocsPostgresMapper dbdocsPostgresMapper) {
         this.dbdocsPostgresMapper = dbdocsPostgresMapper;
     }
@@ -22,5 +22,10 @@ public class DbdocsPostgresServiceImpl implements DbdocsPostgresService {
     @Override
     public List<TableCommentDTO> selectTableCommentDTOList(DbdocsSrchInfo dbdocsSrchInfo) {
         return dbdocsPostgresMapper.selectTableCommentDTOList(dbdocsSrchInfo);
+    }
+
+    @Override
+    public List<ColumnCommentDTO> selectTableColumnCommentDTOList(DbdocsSrchInfo dbdocsSrchInfo) {
+        return dbdocsPostgresMapper.selectTableColumnCommentDTOList(dbdocsSrchInfo);
     }
 }

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.note.dbdocs.mapper.DbdocsPostgresMapper">
+
+    <resultMap type="com.note.dbdocs.dto.TableCommentDTO" id="tableCommentDTOResultMap">
+        <id column="table_name" property="tableName" />
+        <id column="table_comment" property="tableComment" />
+    </resultMap>
+
+    <!-- 테이블명과 테이블 코멘트를 조회 -->
+    <select id="selectTableCommentDTOList" parameterType="com.note.dbdocs.vo.DbdocsSrchInfo" resultMap="tableCommentDTOResultMap">
+        SELECT pgt.tablename AS table_name,
+               sub.table_comment AS table_comment
+        FROM   pg_catalog.pg_tables AS pgt
+                 LEFT JOIN (SELECT b.relname     AS table_name
+                                 , a.description AS table_comment
+                            FROM   pg_catalog.pg_description a
+                                       FULL JOIN pg_catalog.pg_stat_all_tables b
+                                                 ON        a.objoid = b.relid
+                            WHERE  objoid IN (SELECT oid
+                                              FROM   pg_class
+                                              WHERE  relnamespace = (SELECT oid
+                                                                     FROM   pg_catalog.pg_namespace
+                                                                     WHERE  nspname = #{dbdocsSrchInfo.schemaName}
+                                                                     )
+                                             )
+                              AND    objsubid = 0
+                            ) AS sub
+                           ON pgt.tablename = sub.table_name
+        WHERE schemaname = #{dbdocsSrchInfo.schemaName}
+          AND pgt.tablename LIKE '%'||#{dbdocsSrchInfo.tableName}||'%'
+        ORDER BY pgt.tablename
+    </select>
+
+    <resultMap type="com.note.dbdocs.dto.ColumnCommentDTO" id="columnCommentDTOResultMap">
+        <id column="schema_name" property="schemaName" />
+        <id column="table_name" property="tableName" />
+        <id column="table_comment" property="tableComment" />
+        <id column="column_name" property="columnName" />
+        <id column="column_comment" property="columnComment" />
+        <id column="column_type" property="columnType" />
+        <id column="column_length" property="columnLength" />
+        <id column="column_is_nullable" property="columnIsNullable" />
+        <id column="pk" property="pk" />
+        <id column="default_value" property="defaultValue" />
+    </resultMap>
+
+    <!-- 테이블 컬럼명 / 컬럼 코멘트 조회 -->
+    <select id="selectTableColumnCommentDTOList" parameterType="dbdocsSrchInfo" resultMap="columnCommentDTOResultMap">
+        SELECT  a.table_schema AS schema_name,
+                a.table_name,
+                tableinfo.table_comment AS table_comment,
+                a.column_name,                    -- 컬럼명
+                b.comments AS column_comment,                       -- 컬럼 코멘트
+                UPPER(udt_name) AS column_type,                         -- 데이터 타입
+                character_maximum_length AS column_length,  -- 길이
+                CASE WHEN is_nullable = 'YES'
+                     THEN 'Y'
+                     WHEN is_nullable = 'NO'
+                     THEN 'N'
+                     ELSE is_nullable
+                END AS column_is_nullable,                -- null 여부
+                CASE WHEN c.constraint_type = 'PRIMARY KEY'
+                    THEN 'PK'
+                    ELSE c.constraint_type
+                END AS pk,                        -- pk 여부
+                column_default AS default_value,   -- 기본값
+                data_type -- 데이터 타입
+        FROM    information_schema.columns a
+        LEFT JOIN (   SELECT PS.SCHEMANAME      AS SCHEMA,
+                             PS.RELNAME         AS TABLE_NAME,
+                             PA.ATTNAME         AS COLUMN_NAME,
+                             PD.DESCRIPTION     AS COMMENTS
+                        FROM PG_STAT_ALL_TABLES PS, PG_DESCRIPTION PD, PG_ATTRIBUTE PA
+                       WHERE PD.OBJSUBID<![CDATA[<>]]>0
+                         AND PS.RELID=PD.OBJOID
+                         AND PD.OBJOID=PA.ATTRELID
+                         AND PD.OBJSUBID=PA.ATTNUM
+                    ORDER BY PS.RELNAME, PD.OBJSUBID) b
+              ON a.table_schema = b.schema
+             AND a.table_name = b.table_name
+             AND a.column_name = b.column_name
+        LEFT JOIN ( SELECT aa.table_schema, aa.table_name, bb.column_name, aa.constraint_type
+                      FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS       aa
+                         , INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE bb
+                     WHERE 1=1
+                       AND aa.CONSTRAINT_TYPE = 'PRIMARY KEY'
+                       AND aa.TABLE_CATALOG   = bb.TABLE_CATALOG
+                       AND aa.TABLE_SCHEMA    = bb.TABLE_SCHEMA
+                       AND aa.TABLE_NAME      = bb.TABLE_NAME
+                       AND aa.CONSTRAINT_NAME = bb.CONSTRAINT_NAME) c
+             ON a.table_schema = c.table_schema
+            AND a.table_name = c.table_name
+            AND a.column_name = c.column_name
+        LEFT JOIN (    SELECT pgt.tablename AS table_name, sub.table_comment
+                         FROM pg_catalog.pg_tables AS pgt
+                    LEFT JOIN (    SELECT b.relname     AS table_name
+                                        , a.description AS table_comment
+                                     FROM pg_catalog.pg_description a
+                                FULL JOIN pg_catalog.pg_stat_all_tables b
+                                ON        a.objoid = b.relid
+                                WHERE  objoid IN (SELECT oid
+                                                  FROM   pg_class
+                                                  WHERE  relnamespace = (SELECT oid
+                                                                         FROM   pg_catalog.pg_namespace
+                                                                         WHERE  nspname = #{dbdocsSrchInfo.schemaName})
+                                                 )
+                                AND    objsubid = 0
+                                ) AS sub
+                    ON       pgt.tablename = sub.table_name
+                    WHERE    schemaname = #{dbdocsSrchInfo.schemaName}
+                    AND      pgt.tablename LIKE '%'||#{dbdocsSrchInfo.tableName}||'%'
+                    ORDER BY pgt.tablename
+                    ) AS tableinfo
+        ON      a.table_name = tableinfo.table_name
+        WHERE   a.table_schema = #{dbdocsSrchInfo.schemaName}
+                <if test="dbdocsSrchInfo.tableName != null and dbdocsSrchInfo.tableName != ''">
+                    a.table_name = #{dbdocsSrchInfo.tableName}
+                </if>
+                <if test="dbdocsSrchInfo.columnName != null and dbdocsSrchInfo.columnName != ''">
+                    a.column_name = #{dbdocsSrchInfo.columnName}
+                </if>
+        ORDER BY schema_name, table_name, c.constraint_type
+    </select>
+</mapper>
