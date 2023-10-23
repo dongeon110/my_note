@@ -23,7 +23,8 @@
                                               FROM   pg_class
                                               WHERE  relnamespace = (SELECT oid
                                                                      FROM   pg_catalog.pg_namespace
-                                                                     WHERE  nspname = #{dbdocsSrchInfo.schemaName})
+                                                                     WHERE  nspname = #{dbdocsSrchInfo.schemaName}
+                                                                     )
                                              )
                               AND    objsubid = 0
                             ) AS sub
@@ -47,10 +48,10 @@
     </resultMap>
 
     <!-- 테이블 컬럼명 / 컬럼 코멘트 조회 -->
-    <select id="selectColumnCommentDTOList" parameterType="dd" resultMap="columnCommentDTOResultMap">
+    <select id="selectTableColumnCommentDTOList" parameterType="dbdocsSrchInfo" resultMap="columnCommentDTOResultMap">
         SELECT  a.table_schema AS schema_name,
                 a.table_name,
-                -- table comment 필요
+                tableinfo.table_comment AS table_comment,
                 a.column_name,                    -- 컬럼명
                 b.comments AS column_comment,                       -- 컬럼 코멘트
                 UPPER(udt_name) AS column_type,                         -- 데이터 타입
@@ -93,7 +94,34 @@
              ON a.table_schema = c.table_schema
             AND a.table_name = c.table_name
             AND a.column_name = c.column_name
-        --      WHERE a.table_name = 'wkmsbsn' -- authormenudetail
-        where a.column_name = 'pt_count'
+        LEFT JOIN (    SELECT pgt.tablename AS table_name, sub.table_comment
+                         FROM pg_catalog.pg_tables AS pgt
+                    LEFT JOIN (    SELECT b.relname     AS table_name
+                                        , a.description AS table_comment
+                                     FROM pg_catalog.pg_description a
+                                FULL JOIN pg_catalog.pg_stat_all_tables b
+                                ON        a.objoid = b.relid
+                                WHERE  objoid IN (SELECT oid
+                                                  FROM   pg_class
+                                                  WHERE  relnamespace = (SELECT oid
+                                                                         FROM   pg_catalog.pg_namespace
+                                                                         WHERE  nspname = #{dbdocsSrchInfo.schemaName})
+                                                 )
+                                AND    objsubid = 0
+                                ) AS sub
+                    ON       pgt.tablename = sub.table_name
+                    WHERE    schemaname = #{dbdocsSrchInfo.schemaName}
+                    AND      pgt.tablename LIKE '%'||#{dbdocsSrchInfo.tableName}||'%'
+                    ORDER BY pgt.tablename
+                    ) AS tableinfo
+        ON      a.table_name = tableinfo.table_name
+        WHERE   a.table_schema = #{dbdocsSrchInfo.schemaName}
+                <if test="dbdocsSrchInfo.tableName != null and dbdocsSrchInfo.tableName != ''">
+                    a.table_name = #{dbdocsSrchInfo.tableName}
+                </if>
+                <if test="dbdocsSrchInfo.columnName != null and dbdocsSrchInfo.columnName != ''">
+                    a.column_name = #{dbdocsSrchInfo.columnName}
+                </if>
+        ORDER BY schema_name, table_name, c.constraint_type
     </select>
 </mapper>
