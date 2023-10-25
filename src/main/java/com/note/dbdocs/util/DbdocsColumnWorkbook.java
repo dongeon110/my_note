@@ -122,7 +122,7 @@ public class DbdocsColumnWorkbook extends DbdocsWorkbook {
         createDataSet(sheet, row, "테이블ID", 2, tableId, 1);
 
         // 테이블 명
-        createDataSet(sheet, row, "테이블명", 1, tableId, 6);
+        createDataSet(sheet, row, "테이블명", 1, tableComment, 6);
     }
 
     /**
@@ -367,6 +367,10 @@ public class DbdocsColumnWorkbook extends DbdocsWorkbook {
     protected void createDataCell(SXSSFSheet sheet, SXSSFRow row, String data, int mergedCellCount, boolean checkBlank) {
         // row 다음 셀 위치
         int firstCol = row.getLastCellNum() == -1 ? 0 : row.getLastCellNum();
+
+        if(data == null || data.equals("null")) {
+            data = "";
+        }
 
         // 병합 셀 값 수정
         mergedCellCount--;
