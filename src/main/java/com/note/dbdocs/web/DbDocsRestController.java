@@ -7,21 +7,22 @@ import com.note.dbdocs.util.DbdocsColumnWorkbook;
 import com.note.dbdocs.util.DbdocsTableWorkbook;
 import com.note.dbdocs.vo.DbdocsSrchInfo;
 import com.note.utils.ResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@Tag(name="PostgreSQL 코멘트 조회", description="PostgreSQL 코멘트 조회 설명설명")
 @Slf4j
 @RestController
 @RequestMapping("/dbdocs/api")
@@ -36,9 +37,12 @@ public class DbDocsRestController {
      * @param tableName 테이블 명 (없는 경우 전체 조회)
      * @return {@link com.note.dbdocs.dto.TableCommentDTO} List
      */
-    @GetMapping(value="/postgresTableComment")
+    @Operation(summary="테이블 목록 조회", description="테이블 목록 조회")
+    @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
+    @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
+    @PutMapping(value="/postgresTableComment")
     public ResponseEntity<?> getTableComment(
-            @RequestParam(name="schema_name", defaultValue="public", required = false) String schemaName,
+            @RequestParam(name="schema_name", defaultValue="public") String schemaName,
             @RequestParam(name="table_name", defaultValue="", required = false) String tableName
     ) {
 
@@ -68,9 +72,13 @@ public class DbDocsRestController {
      * @param systemName 시스템 명, 없을 경우 제목 없음
      * @return 엑셀 다운로드
      */
+    @Operation(summary="테이블 목록 다운로드", description="테이블 목록 엑셀 다운로드")
+    @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
+    @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
+    @Parameter(name="system_name", description="입력할 시스템 명. 없으면 제목 없음")
     @GetMapping(value="/download/tableListExcel")
     public ResponseEntity<?> getDownloadTableList(
-            @RequestParam(name="schema_name", defaultValue="public", required = false) String schemaName,
+            @RequestParam(name="schema_name", defaultValue="public") String schemaName,
             @RequestParam(name="table_name", defaultValue="", required = false) String tableName,
             @RequestParam(name="system_name", defaultValue="", required = false) String systemName
     ) {
@@ -149,9 +157,13 @@ public class DbDocsRestController {
      * @param columnName 컬럼명, 없으면 전체
      * @return {@link com.note.dbdocs.dto.ColumnCommentDTO} List
      */
-    @GetMapping("/postgresColumnComment")
+    @Operation(summary="테이블 컬럼목록 조회", description="테이블 명세서 엑셀 다운로드를 위한 컬럼 목록 조회")
+    @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
+    @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
+    @Parameter(name="column_name", description="조회할 컬럼 명. 없으면 전체")
+    @PostMapping("/postgresColumnComment")
     public ResponseEntity<?> getColumnComment(
-            @RequestParam(name="schema_name", defaultValue="public", required = false) String schemaName,
+            @RequestParam(name="schema_name", defaultValue="public") String schemaName,
             @RequestParam(name="table_name", defaultValue="", required = false) String tableName,
             @RequestParam(name="column_name", defaultValue="", required = false) String columnName
     ) {
@@ -184,6 +196,13 @@ public class DbDocsRestController {
      * @param systemName    시스템 명
      * @return
      */
+    @Operation(summary="테이블 명세서 다운로드", description="테이블 명세서 엑셀 다운로드")
+    @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
+    @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
+    @Parameter(name="column_name", description="조회할 컬럼 명. 없으면 전체")
+    @Parameter(name="system_name", description="입력할 시스템 명. 없으면 공백")
+    @Parameter(name="write_date", description="입력할 날짜. 없으면 오늘")
+    @Parameter(name="writer", description="입력할 작성자 명. 없으면 공백")
     @GetMapping(value="/download/columnListExcel")
     public ResponseEntity<?> getDownloadColumnList(
             @RequestParam(name="schema_name", defaultValue="public") String schemaName,

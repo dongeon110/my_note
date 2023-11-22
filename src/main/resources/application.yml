@@ -20,10 +20,12 @@ spring:
     show-sql: true
 
 mybatis:
-  type-aliases-package: com.note.dbdocs.dto,com.note.dbdocs.vo
+  type-aliases-package: com.note
   mapper-locations: classpath:mapper/**/*.xml
   configuration:
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: true # DB CAMEL_CASE -> Java snakeCase 자동 매핑
+    jdbc-type-for-null: varchar
+    call-setters-on-nulls: true # HashMap 등 빈 컬럼 Null 로 리턴
 
 logging:
   level:
