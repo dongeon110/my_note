@@ -40,7 +40,7 @@ public class DbDocsRestController {
     @Operation(summary="테이블 목록 조회", description="테이블 목록 조회")
     @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
     @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
-    @PutMapping(value="/postgresTableComment")
+    @GetMapping(value="/postgresTableComment")
     public ResponseEntity<?> getTableComment(
             @RequestParam(name="schema_name", defaultValue="public") String schemaName,
             @RequestParam(name="table_name", defaultValue="", required = false) String tableName
@@ -161,7 +161,7 @@ public class DbDocsRestController {
     @Parameter(name="schema_name", description="조회할 스키마 명. 기본 public. 필수")
     @Parameter(name="table_name", description="조회할 테이블 명. 없으면 전체")
     @Parameter(name="column_name", description="조회할 컬럼 명. 없으면 전체")
-    @PostMapping("/postgresColumnComment")
+    @GetMapping("/postgresColumnComment")
     public ResponseEntity<?> getColumnComment(
             @RequestParam(name="schema_name", defaultValue="public") String schemaName,
             @RequestParam(name="table_name", defaultValue="", required = false) String tableName,
