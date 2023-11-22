@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class Board {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // postgres seq
     @Column(name="board_index")
     private Long boardIndex;
 
