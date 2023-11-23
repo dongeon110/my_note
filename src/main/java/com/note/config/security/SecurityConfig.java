@@ -1,4 +1,4 @@
-package com.note.security;
+package com.note.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
