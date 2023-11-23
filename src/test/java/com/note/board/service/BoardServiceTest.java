@@ -42,10 +42,11 @@ class BoardServiceTest {
     @DisplayName("테스트 Board 데이터 1개 조회")
     void getBoard_Expect_테스트_제목() {
         //given
-        Board expectedBoard = new Board();
-        expectedBoard.setBoardIndex(testBoardIndex);
-        expectedBoard.setTitle("테스트 제목");
-        expectedBoard.setWriter(1L);
+        Board expectedBoard = Board.builder()
+                .boardIndex(testBoardIndex)
+                .title("테스트 제목")
+                .writer(1L)
+                .build();
 
         //when
         Board actualBoard = boardService
@@ -62,9 +63,11 @@ class BoardServiceTest {
     @Transactional
     void saveBoard() {
         //given
-        Board board = new Board();
-        board.setTitle("테스트 제목");
-        board.setWriter(1L); // Test
+        Board board = Board.builder()
+                .title("테스트 제목")
+                .writer(1L)
+                .build();
+
         //when
         Board resultBoard = boardService
                 .saveBoard(board);
@@ -79,8 +82,9 @@ class BoardServiceTest {
     @Transactional
     void delete() {
         //given
-        Board board = new Board();
-        board.setBoardIndex(testBoardIndex); // 삭제할 데이터
+        Board board = Board.builder()
+                .boardIndex(testBoardIndex)
+                .build();
         
         getBoard_Expect_테스트_제목(); // 기존 테스트 데이터는 있어야 함
 

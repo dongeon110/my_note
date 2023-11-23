@@ -34,9 +34,10 @@ public class BoardRestController {
     @PutMapping("/create.do")
     public ResponseEntity create() {
 
-        Board board = new Board();
-        board.setTitle("test Title");
-        board.setWriter(2L);
+        Board board = Board.builder()
+                .title("test Title")
+                .writer(2L)
+                .build();
 
         Board result = boardService.saveBoard(board);
 
@@ -48,10 +49,12 @@ public class BoardRestController {
     @PostMapping("/update.do")
     public ResponseEntity update() {
 
-        Board board = new Board();
-        board.setBoardIndex(3L);
-        board.setTitle("title update Test");
-        board.setWriter(2L);
+        Board board = Board.builder()
+                .boardIndex(3L)
+                .title("title update Test")
+                .writer(2L)
+                .build();
+
 
         Board result = boardService.saveBoard(board);
 
@@ -63,8 +66,9 @@ public class BoardRestController {
     @DeleteMapping("/delete.do")
     public ResponseEntity delete() {
 
-        Board board = new Board();
-        board.setBoardIndex(3L);
+        Board board = Board.builder()
+                .boardIndex(3L)
+                .build();
 
         boardService.delete(board);
 
