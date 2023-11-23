@@ -14,9 +14,14 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         // 인증되지 않은 요청을 허락한다는 의미 (로그인 필요 X)
-        http.authorizeHttpRequests(
-                (authorizeHttpRequests) -> authorizeHttpRequests
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
+        http
+                .authorizeHttpRequests(
+                        (authorizeHttpRequests) -> authorizeHttpRequests
+                                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                .csrf((csrf) -> csrf
+                        .ignoringRequestMatchers((new AntPathRequestMatcher("/board/api/**"))))
+        ;
+
         return http.build();
     }
 }
