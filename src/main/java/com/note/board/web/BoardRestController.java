@@ -66,7 +66,7 @@ public class BoardRestController {
         Board board = new Board();
         board.setBoardIndex(3L);
 
-//        boardService.delete(board);
+        boardService.delete(board);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(null);
