@@ -1,9 +1,6 @@
-package com.note.board.domain;
+package com.note.member.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -29,4 +26,8 @@ public class MyUser {
 
     @Column(name="user_email")
     private String userEmail;
+
+    @Column(name="user_role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
