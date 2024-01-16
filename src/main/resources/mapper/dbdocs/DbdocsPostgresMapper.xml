@@ -117,10 +117,10 @@
         ON      a.table_name = tableinfo.table_name
         WHERE   a.table_schema = #{dbdocsSrchInfo.schemaName}
                 <if test="dbdocsSrchInfo.tableName != null and dbdocsSrchInfo.tableName != ''">
-                    a.table_name = #{dbdocsSrchInfo.tableName}
+                    AND a.table_name = #{dbdocsSrchInfo.tableName}
                 </if>
                 <if test="dbdocsSrchInfo.columnName != null and dbdocsSrchInfo.columnName != ''">
-                    a.column_name = #{dbdocsSrchInfo.columnName}
+                    AND a.column_name = #{dbdocsSrchInfo.columnName}
                 </if>
         ORDER BY schema_name, table_name, c.constraint_type
     </select>
