@@ -74,7 +74,7 @@
                              PA.ATTNAME         AS COLUMN_NAME,
                              PD.DESCRIPTION     AS COMMENTS
                         FROM PG_STAT_ALL_TABLES PS, PG_DESCRIPTION PD, PG_ATTRIBUTE PA
-                       WHERE PD.OBJSUBID<![CDATA[<>]]>0
+                       WHERE PD.OBJSUBID <![CDATA[<>]]> 0
                          AND PS.RELID=PD.OBJOID
                          AND PD.OBJOID=PA.ATTRELID
                          AND PD.OBJSUBID=PA.ATTNUM
