@@ -24,7 +24,7 @@ class BoardServiceTest {
     @Autowired
     private BoardRepository boardRepository;
 
-    private Long testBoardIndex = 3L;
+    private Long testBoardIndex = 1L;
 
     @Test
     @DisplayName("전체 조회시 결과 있음")
