@@ -1,9 +1,6 @@
 package com.note.board.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,6 +12,7 @@ import lombok.*;
 public class MyUser {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // postgres seq
     @Column(name="user_idx")
     private Long userIndex;
 
