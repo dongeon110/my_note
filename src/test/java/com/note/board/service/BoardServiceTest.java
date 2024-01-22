@@ -3,6 +3,7 @@ package com.note.board.service;
 import com.note.board.domain.Board;
 import com.note.board.repository.BoardRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Slf4j
 class BoardServiceTest {
 
     @Autowired
@@ -96,5 +98,26 @@ class BoardServiceTest {
 
         assertThat(maybeBoard)
                 .isEmpty();
+    }
+
+    @Test
+    @DisplayName("수정 테스트")
+    @Transactional
+    void update() {
+        //given
+        Board board = boardService.getBoard(testBoardIndex)
+                .get();
+        log.info("before title: " + board.getTitle());
+
+        //when
+        board.setTitle("수정 테스트");
+
+        //then
+        Board afterBoard = boardService.getBoard(testBoardIndex)
+                .get();
+        log.info("after title: " + afterBoard.getTitle());
+
+        assertThat(afterBoard.getTitle())
+                .isEqualTo("수정 테스트");
     }
 }
